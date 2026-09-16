@@ -1,0 +1,14 @@
+DAY 1 EXERCISE: ESP32 CONFIGURATION & ARCHITECTURE
+
+1. FLASHING & HARDWARE VERIFICATION
+- Flashing: The process of writing compiled binary firmware to the ESP32's non-volatile flash memory via a USB-to-UART bridge.
+- Verification: Running a Blink or WiFi scan sketch confirms that the board's GPIO pins, system timers, and 2.4 GHz RF antenna are fully functional[cite: 1].
+- Partitions: Documenting the flash size and partition scheme is necessary because it dictates exactly how memory is allocated for the bootloader, the main application, and file systems[cite: 1].
+
+2. REPOSITORY SETUP
+- Creating a structured layout (like firmware/ and docs/) establishes a clean version control workflow[cite: 1]. 
+- Using platformio.ini or a standard Arduino project structure guarantees that board frameworks, dependencies, and upload speeds remain reproducible across different computers[cite: 1].
+
+3. NODE COMPARISON: ESP32 VS. ESP8266
+- ESP32 (e.g., WROOM-32D)[cite: 1]: Features a dual-core 32-bit processor, Wi-Fi + Bluetooth, ~520 KB SRAM, and 34 GPIOs. It is highly capable and ideal for complex, multi-threaded tasks using an RTOS.
+- ESP8266[cite: 1]: Features a single-core 32-bit processor, Wi-Fi only, ~160 KB SRAM, and 17 GPIOs. It remains a cost-effective choice for simpler, single-threaded IoT nodes where processing demands are low.
