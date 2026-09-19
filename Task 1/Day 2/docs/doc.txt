@@ -1,0 +1,18 @@
+DAY 2 EXERCISE: ARDUINO CORE FOR ESP32 & USB DRIVERS
+
+1. BUILD ENVIRONMENT SETUP
+- Core Installation: Install the Espressif ESP32 board package (version > 3.0). The Arduino framework is used to abstract Espressif SDK calls into the familiar setup() and loop() structure while exposing necessary networking libraries like WiFi and HTTPClient.
+- Reproducibility: Create a platformio.ini or an Arduino libraries.txt lockfile. This guarantees that mentors can exactly reproduce your specific build environment
+- Verification: Verify the environment by successfully compiling an empty sketch
+
+2. USB DRIVERS & TROUBLESHOOTING
+- Drivers: Resolve any USB UART driver issues (specifically for CP2102/CH340 chips) across Windows, macOS, or Linux, ensuring the COM port successfully appears in your Device Manager[cite: 2].
+- Upload Fixes: If an upload fails with a "Failed to connect" error, hold down the BOOT button on the ESP32 while clicking Upload 
+- Upload Speed: Maintain the initial upload speed at 115200 baud; only increase it to 921600 after verifying that basic uploads function correctly
+
+3. PARTITION SCHEMES & DEPENDENCIES
+- Partitions: Configure the partition scheme to either "Minimal SPIFFS" or "Huge APP". This is critical to ensure adequate flash space is reserved for future Over-The-Air (OTA) updates and configuration files
+- Libraries: Install the specific library dependencies required for the upcoming edge deployments: DHT sensor library, PubSubClient, ArduinoJson, and ArduinoOTA
+
+4. DOCUMENTATION
+- Record Settings: Document all of your configured build settings inside docs/build_environment.md and include supporting screenshots
