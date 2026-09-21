@@ -1,0 +1,15 @@
+DAY 3 EXERCISE: WIFI STATION MODE & CONNECTION
+
+1. STA MODE & RESILIENT CONNECTION
+- STA Mode: Polyhouse nodes are configured to join existing farm WiFi networks as stations (STA mode) rather than creating their own Access Points[cite: 3].
+- Connection Manager: Implement a resilient WiFi connection manager that utilizes timeouts, exponential backoff on connection failures, and periodic WiFi.status() health checks[cite: 3].
+- Non-blocking Reconnects: Handle network disconnect events and attempt reconnections in a way that does not permanently block sensor readings[cite: 3].
+
+2. CREDENTIAL MANAGEMENT & PROVISIONING
+- Secrets Management: Store hard-coded network credentials (SSID and password) in a separate secrets.h file that is gitignored to keep sensitive data out of the source code[cite: 3].
+- Provisioning Options: Document WiFi provisioning concepts like SmartConfig and captive portals (noting WPS is deprecated)[cite: 3]. This prepares field technicians to connect nodes to new networks without needing to re-flash the firmware[cite: 3].
+
+3. LOGGING & HARDWARE LIMITATIONS
+- Connection Logging: Upon successful association, print the IP address, RSSI (signal strength), BSSID, and channel to the serial monitor to lay the foundation for future HTTP and MQTT tasks[cite: 3].
+- Network Compatibility: The ESP32 only supports 2.4 GHz WiFi and cannot join 5 GHz farm APs[cite: 3].
+- Signal Warnings: Always log RSSI during connection; signal values dropping below -80 dBm are strong predictors of MQTT publish failures within metal polyhouses[cite: 3].
