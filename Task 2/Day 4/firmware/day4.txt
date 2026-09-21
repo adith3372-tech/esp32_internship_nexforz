@@ -1,0 +1,93 @@
+// src/day04_ntp_time.ino
+#include <WiFi.h>
+#include <time.h>
+#include "secrets.h"
+
+const char* NTP_SERVER = "pool.ntp.org";
+const char* TZ_INFO    = "IST-5:30";          // POSIX TZ string for India (no DST)
+const char* TZ_SUFFIX  = "+05:30";            // appended to ISO timestamps
+
+const uint32_t WIFI_TIMEOUT_MS = 20000;
+const uint32_t NTP_TIMEOUT_MS  = 10000;
+const uint32_t RESYNC_RETRY_MS = 15000;
+
+bool timeSynced = false;
+
+// Explicit prototypes (avoids Arduino auto-prototype issues with default args)
+bool connectWiFi(uint32_t timeoutMs);
+bool syncTime(uint32_t timeoutMs);
+bool isTimeValid();
+String isoTimestamp();
+
+bool connectWiFi(uint32_t timeoutMs) {
+  if (WiFi.status() == WL_CONNECTED) return true;
+  WiFi.mode(WIFI_STA);
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  uint32_t start = millis();
+  while (WiFi.status() != WL_CONNECTED && (millis() - start) < timeoutMs) {
+    delay(300);
+    Serial.print('.');
+  }
+  Serial.println();
+  if (WiFi.status() == WL_CONNECTED) {
+    Serial.print("WiFi OK, IP: ");
+    Serial.println(WiFi.localIP());
+    return true;
+  }
+  Serial.println("WiFi connect timed out");
+  return false;
+}
+
+bool isTimeValid() {
+  struct tm ti;
+  return getLocalTime(&ti, 0);   // 0 ms: don't block, just check if clock is set
+}
+
+bool syncTime(uint32_t timeoutMs) {
+  configTzTime(TZ_INFO, NTP_SERVER);   // sets timezone + starts SNTP
+  struct tm ti;
+  uint32_t start = millis();
+  while (!getLocalTime(&ti, 200) && (millis() - start) < timeoutMs) {
+    Serial.print('.');
+  }
+  Serial.println();
+  timeSynced = getLocalTime(&ti, 0);
+  if (timeSynced) {
+    Serial.printf("NTP OK: %04d-%02d-%02d %02d:%02d:%02d\n",
+                  ti.tm_year + 1900, ti.tm_mon + 1, ti.tm_mday,
+                  ti.tm_hour, ti.tm_min, ti.tm_sec);
+  } else {
+    Serial.println("NTP sync failed");
+  }
+  return timeSynced;
+}
+
+String isoTimestamp() {
+  struct tm ti;
+  if (!getLocalTime(&ti, 0)) return String("unsynced");
+  char buf[32];
+  strftime(buf, sizeof(buf), "%Y-%m-%dT%H:%M:%S", &ti);
+  return String(buf) + TZ_SUFFIX;
+}
+
+void setup() {
+  Serial.begin(115200);
+  delay(500);
+  if (connectWiFi(WIFI_TIMEOUT_MS)) {
+    syncTime(NTP_TIMEOUT_MS);
+  }
+}
+
+void loop() {
+  static uint32_t lastRetry = 0;
+
+  // Keep the flag truthful, and retry if we never got (or lost) a valid time
+  timeSynced = isTimeValid();
+  if (!timeSynced && (millis() - lastRetry) > RESYNC_RETRY_MS) {
+    lastRetry = millis();
+    if (connectWiFi(WIFI_TIMEOUT_MS)) syncTime(NTP_TIMEOUT_MS);
+  }
+
+  Serial.printf("Now: %s | valid: %s\n", isoTimestamp().c_str(), timeSynced ? "yes" : "no");
+  delay(5000);
+}

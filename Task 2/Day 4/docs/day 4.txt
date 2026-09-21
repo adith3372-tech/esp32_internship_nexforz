@@ -1,0 +1,15 @@
+DAY 4 EXERCISE: NTP TIME SYNC & TIMESTAMPS
+
+1. NTP SYNCHRONIZATION & CONFIGURATION
+- The RTC Problem: The ESP32 lacks a battery-backed RTC out of the box; without synchronization, rebooted nodes report epoch 1970 or drift wildly, which breaks time-series data joins with controller logs[cite: 4].
+- SNTP Setup: Configure time synchronization via NTP immediately after WiFi connects by calling configTime() with timezone and daylight rules (e.g., +5:30 for IST)[cite: 4]. For POSIX timezone strings, use setenv() and tzset() if needed[cite: 4].
+- Server Fallbacks: Use time.nist.gov or a farm-local NTP server if the standard outbound pool.ntp.org is blocked[cite: 4].
+
+2. TIME VERIFICATION & FORMATTING
+- Verification: Use getLocalTime() to verify the sync; the code should block until a valid time is acquired or a timeout occurs, including logic to detect sync failures and retry[cite: 4].
+- ISO-8601: Format the synchronized timestamps as ISO-8601 strings so they can be attached to every sensor reading struct for JSON payloads[cite: 4].
+- NVS Persistence: As an optional stretch goal, persist the last-known epoch to Non-Volatile Storage (NVS) to help the node survive brief offline periods[cite: 4].
+
+3. INTEGRATION & DELIVERABLES
+- Flow Integration: Integrate the time synchronization step directly into the WiFi connection flow established on Day 3[cite: 4].
+- Deliverable: Construct a reusable TimeService module containing the NTP sync and ISO formatter, which will be utilized across Days 7–22[cite: 4].
