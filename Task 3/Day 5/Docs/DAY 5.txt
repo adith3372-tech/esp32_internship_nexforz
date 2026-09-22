@@ -1,0 +1,20 @@
+DAY 5 EXERCISE: DHT22 ON ESP32 WITH ERROR HANDLING
+
+1. WIRING & SENSOR SETUP
+- Sensor Overview: The DHT22 (AM2302) measures temperature and relative humidity over a single-wire protocol, making it ideal for polyhouse climate monitoring despite being slower than I2C SHT31 sensors.
+- Hardware Connections: Wire the sensor with VCC 3.3V, GND, and use a 10 kΩ pull-up resistor on the data line connected to a safe GPIO (GPIO 4 is recommended on the ESP32).
+- Library Integration: Use either the Adafruit or Rob Tillaart DHT library to interface with the sensor.
+
+2. READING & ERROR HANDLING
+- Sampling Interval: Read temperature (°C) and humidity (%) while enforcing a 2-second minimum interval between samples.
+- Robust Handling: Implement error handling to manage checksum failures, NaN (Not a Number) reads, and the initial sensor warm-up phase.
+- Retry Logic: Handle isnan() results and library error codes by retrying up to 3 times per cycle, logging failures without crashing the main loop().
+
+3. DATA PROCESSING & OUTPUT
+- Struct Packaging: Wrap the sensor reads in a 'SensorBundle' struct that includes validity flags.
+- Noise Filtering: Apply a simple median filter over the last 3 successful samples to reject single-shot spikes caused by electrical noise.
+- Serial Output: Print structured serial output that matches future JSON field names, which will be necessary for feeding the Nexforz IoT Lab on Day 7 and MQTT on Day 12.
+
+4. MENTOR TROUBLESHOOTING TIPS
+- Hardware First: If every single read fails, try swapping the DHT22 unit before spending hours debugging your code.
+- Interference: Keep the lead wires short; long, unshielded cables will pick up noise from polyhouse VFD motors.

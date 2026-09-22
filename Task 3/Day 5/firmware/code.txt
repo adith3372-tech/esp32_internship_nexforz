@@ -1,0 +1,44 @@
+// src/day07_dht11.ino
+#include <WiFi.h>
+#include <DHT.h>
+#include "secrets.h"
+
+#define DHTPIN   4
+#define DHTTYPE  DHT11
+
+DHT dht(DHTPIN, DHTTYPE);
+
+unsigned long lastRead = 0;
+const unsigned long READ_INTERVAL = 1000; // DHT11 max ~1Hz
+
+void setup() {
+  Serial.begin(115200);
+  delay(500);
+
+  dht.begin();
+
+  WiFi.begin(WIFI_SSID, WIFI_PASS);
+  Serial.print(F("Connecting to WiFi"));
+  while (WiFi.status() != WL_CONNECTED) {
+    delay(200);
+    Serial.print(".");
+  }
+  Serial.println();
+  Serial.println(F("WiFi connected"));
+}
+
+void loop() {
+  if (millis() - lastRead >= READ_INTERVAL) {
+    lastRead = millis();
+
+    float temp = dht.readTemperature();     // Celsius
+    float hum  = dht.readHumidity();
+
+    if (isnan(temp) || isnan(hum)) {
+      Serial.println(F("DHT11 read failed"));
+      return;
+    }
+
+    Serial.printf("Temp: %.1f C  Humidity: %.1f %%\n", temp, hum);
+  }
+}

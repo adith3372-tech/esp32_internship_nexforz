@@ -1,0 +1,20 @@
+DAY 6 EXERCISE: OTA UPDATES OVERVIEW (ESP32)
+
+1. OTA MECHANICS & PARTITIONS
+- Need for OTA: Field polyhouse nodes cannot return to the lab for every firmware fix, making Over-the-Air (OTA) updates over WiFi essential using ArduinoOTA or ESP-IDF esp_https_ota.
+- Dual-Partition Layout: Configure a dual-partition layout to allow flashing new app partitions over the network.
+- Rollback Protection: Conceptually verify that a rollback partition exists in the partition table so the device can recover if the new firmware fails its boot checks.
+
+2. CONFIGURATION & UPLOAD PROCESS
+- ArduinoOTA Setup: Enable ArduinoOTA using the hostname 'polyhouse-node-01' and secure the connection with password protection.
+- Upload Sequence: Upload the firmware once via a USB connection first; subsequent firmware uploads can then be executed via the OTA Network Port.
+- Security Risks: Document the security risks associated with OTA, specifically noting the vulnerabilities of unsigned images and the LAN attacker surface.
+
+3. DEEP SLEEP INTEGRATION PREVIEW
+- Timing Constraints: In future deployments, nodes will wake, sample, upload, and then sleep for 55 seconds; OTA updates must completely finish before this short sleep window closes.
+- OTA Callback: Sketch the interaction between deep sleep and OTA to ensure the device is programmed to stay awake during the OTA callback.
+
+4. MENTOR TIPS & DELIVERABLES
+- USB Scaffolding: Keep the USB cable connected for your first OTA attempt so that if it fails, USB recovery is much faster on the scaffolding.
+- Operational Safety: Never perform an OTA update during an active MQTT irrigation command window without conducting staging tests first.
+- Deliverables: Provide an OTA-enabled sketch, a screenshot of a successful OTA upload, and an OTA policy document.
